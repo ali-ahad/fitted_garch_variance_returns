@@ -21,6 +21,7 @@ optimized_garch_variance <- function(p, q, u1) {
 } 
 
 path = paste(cur_dir,'/datasets/profit_earnings.xlsx', sep = "")
+df = import_list(path)
 basic_materials = df$basic_materials
 capital_goods = df$capital_goods
 consumer_cyclical = df$consumer_cyclical
@@ -78,7 +79,7 @@ cumulative_return = c(1)
 for (i in 2:nrow(df_kelly)) {
   
   kellys_val = as.numeric(df_kelly[i-1,])
-  avg = as.numeric(df_moving_average[i,])
+  avg = as.numeric(df_daily_return[i,])
   weight = c()
   
   for (j in 1:length(names)) {
@@ -90,7 +91,7 @@ for (i in 2:nrow(df_kelly)) {
   }
   
   latest_return = cumulative_return[length(cumulative_return)]
-  append_return = latest_return + (t(avg) %*% weight)
+  append_return = latest_return * ((1+t(avg)) %% weight)
   cumulative_return = c(cumulative_return, append_return)
 }
 
