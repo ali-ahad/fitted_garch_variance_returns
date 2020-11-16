@@ -21,31 +21,32 @@ optimized_garch_variance <- function(p, q, u1) {
 } 
 
 
-kellys_criterion <- function(a, df_kelly, df_daily_return) {
+kellys_criterion <- function(a, df_kelly, df_moving_average) {
   cumulative_return = c(1)
   for (i in 2:nrow(df_kelly)) {
     
     kellys_val = as.numeric(df_kelly[i-1,])
-    avg = as.numeric(df_daily_return[i,])
+    avg = as.numeric(df_moving_average[i,])
     weight = c()
     
     for (j in 1:length(names)) {
       if (kellys_val[j] > a) {
-        weight = c(weight, 1/5)
+        weight = c(weight, (1 / ncol(df_kelly)))
       } else {
         weight = c(weight, 0)
       }
     }
     
     latest_return = cumulative_return[length(cumulative_return)]
-    append_return = latest_return + (t(avg) %*% weight)
+    append_return = latest_return * (1 + (t(avg) %*% weight))
     cumulative_return = c(cumulative_return, append_return)
   }
   
   return(cumulative_return[length(cumulative_return)])
 }
 
-path = paste(cur_dir,'/datasets/profit_earnings.xlsx', sep = "")
+
+path = paste(cur_dir,'/datasets/large_cap.xlsx', sep = "")
 df = import_list(path)
 basic_materials = df$basic_materials
 capital_goods = df$capital_goods
@@ -70,7 +71,7 @@ names = basic_materials[,1]
 for (i in 1:length(codes)) {
   closing_prices = get.hist.quote(instrument = codes[i], start = "2020-01-01", end = "2020-11-13", quote = "Close", provider = "yahoo")
   series = as.ts(closing_prices)
-  daily_return = (lag(c(series)) - c(series)) / c(series)
+  daily_return = (lag(series) - series) / series
   
   daily_return = daily_return[!is.na(daily_return)]
   fitted_variance = optimized_garch_variance(1, 1, daily_return)
@@ -107,23 +108,23 @@ k_train = df_kelly[1 : k_train_length,]
 k_test = df_kelly[seq(k_train_length + 1, nrow(df_kelly)),]
 
 # Daily return dataframe train test split
-m_train_length = ceiling(0.8*nrow(df_daily_return))
-avg_train = df_daily_return[1: m_train_length, ]
-avg_test = df_daily_return[seq(m_train_length + 1, nrow(df_daily_return)),]
+m_train_length = ceiling(0.8*nrow(df_moving_average))
+avg_train = df_moving_average[1: m_train_length, ]
+avg_test = df_moving_average[seq(m_train_length + 1, nrow(df_moving_average)),]
 
 a_initial = 0.5
-A_optim = optim(a_initial, kellys_criterion, df_kelly = k_train, df_daily_return= avg_train, method = 'Brent', lower = 0 , upper = 1,control = list(fnscale = -1))
+A_optim = optim(a_initial, kellys_criterion, df_kelly = k_train, df_moving_average= avg_train, method = 'Brent', lower = 0 , upper = 1,control = list(fnscale = -1))
 A_optim
 
 # Use the test set to see the performance
 cumulative_return = kellys_criterion(A_optim$par, k_test, avg_test)
 cumulative_return
 
-compounded_return = cumulative_return^(1 / (nrow(df_kelly) - 1))
-compounded_return
-
+compounded_return = (cumulative_return)^(1 / (nrow(df_kelly) - 1))
 final_return = compounded_return - 1
-final_return
+
+print(paste("Compounded Return:", round(compounded_return, 5), sep = " "))
+print(paste("Compound Final Return: ", round((final_return) * 100, 5), "%", sep = ""))
 
 # Clear console and environment
 rm(list=ls())
