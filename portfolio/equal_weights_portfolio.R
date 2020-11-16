@@ -55,7 +55,6 @@ df_kelly
 
 # ************** METHODOLOGY 1 - Equal Weights **************** #
 cumulative_return = equal_weights_return(df_kelly, df_moving_average)
-
 compounded_return = get_compound_return(cumulative_return[length(cumulative_return)], length(cumulative_return))
 final_return = compounded_return - 1
 
