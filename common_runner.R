@@ -23,6 +23,15 @@ daily_return_list = list()
 moving_average_list = list()
 kellys_list = list()
 
+# Getting the branchmark data (SPY)
+  SPY_closing_prices = get.hist.quote(instrument = "SPY", start = "2020-01-01", end = "2020-11-13", quote = "Close", provider = "yahoo")
+  SPY_daily_return = get_daily_return(SPY_closing_prices)
+  SPY_cumlative_return=cumprod(1+SPY_daily_return)
+  SPY_cumlative_return_ts = as.ts(cumprod(1+SPY_daily_return))
+  
+  SPY_compounded_return = get_compound_return(SPY_cumlative_return[length(SPY_cumlative_return)], length(SPY_cumlative_return))
+  SPY_final_return = SPY_compounded_return - 1
+
 # Change the dataframe here for appropriate codes and names
 codes = basic_materials[,2]
 names = basic_materials[,1]
@@ -60,10 +69,17 @@ equal_cumulative_return = equal_weights_return(df_kelly, df_moving_average)
 equal_compounded_return = get_compound_return(equal_cumulative_return[length(equal_cumulative_return)], length(equal_cumulative_return))
 equal_final_return = equal_compounded_return - 1
 
-equal_cumulative_return
-
+print(paste("SPY_Cumulative Return:", round(SPY_cumlative_return[length(SPY_cumlative_return)], 5),sep = " "))
+print(paste("Cumulative Return:", round(equal_cumulative_return[length(equal_cumulative_return)], 5), sep = " "))
+print(paste("SPY_Compounded Return:", round(SPY_compounded_return, 5), sep = " "))
+print(paste("SPY_Compound Final Return: ", round((SPY_final_return) * 100, 5), "%", sep = ""))
 print(paste("Compounded Return:", round(equal_compounded_return, 5), sep = " "))
 print(paste("Compound Final Return: ", round((equal_final_return) * 100, 5), "%", sep = ""))
+
+equal_cumulative_return_ts<-as.ts(equal_cumulative_return)
+
+plot(equal_cumulative_return_ts,xlab = 'Time',ylab = 'Cumulative Return', col='red')
+lines(SPY_cumlative_return_ts,col='blue')
 
 ####################################################################################
 # ************** METHODOLOGY 2 - Weights dependent on kelly value **************** #
@@ -74,8 +90,17 @@ kelly_final_return = kelly_compounded_return - 1
 
 kelly_cumulative_return
 
+print(paste("SPY_Cumulative Return:", round(SPY_cumlative_return[length(SPY_cumlative_return)], 5),sep = " "))
+print(paste("Cumulative Return:", round(kelly_cumulative_return[length(kelly_cumulative_return)], 5), sep = " "))
+print(paste("SPY_Compounded Return:", round(SPY_compounded_return, 5), sep = " "))
+print(paste("SPY_Compound Final Return: ", round((SPY_final_return) * 100, 5), "%", sep = ""))
 print(paste("Kelly Weighted Compounded Return:", round(kelly_compounded_return, 5), sep = " "))
 print(paste("Kelly Weighted Compound Final Return: ", round((kelly_final_return) * 100, 5), "%", sep = ""))
+
+kelly_cumulative_return_ts<-as.ts(equal_cumulative_return)
+
+plot(kelly_cumulative_return_ts,xlab = 'Time',ylab = 'Cumulative Return', col='red')
+lines(SPY_cumlative_return_ts,col='blue')
 
 ################################################################################################
 # ************** METHODOLOGY 3 - Parameter choosing on maximization of profit **************** #
@@ -98,11 +123,23 @@ A_optim
 optim_cumulative_return = general_kellys_criterion(A_optim$par, k_test, avg_test)
 optim_cumulative_return
 
+optim_cumulative_return_series=general_kellys_criterion_cumulative_return_series(A_optim$par, k_test, avg_test)
+
 optim_compounded_return = get_compound_return(optim_cumulative_return, nrow(df_kelly))
 optim_final_return = optim_compounded_return - 1
 
+print("The optimal Kelly Citerion",A_optim$par)
+print(paste("SPY_Cumulative Return:", round(SPY_cumlative_return[length(SPY_cumlative_return)], 5),sep = " "))
+print(paste("Cumulative Return:", round(optim_cumulative_return, 5), sep = " "))
+print(paste("SPY_Compounded Return:", round(SPY_compounded_return, 5), sep = " "))
+print(paste("SPY_Compound Final Return: ", round((SPY_final_return) * 100, 5), "%", sep = ""))
 print(paste("Optimized Parameter Compounded Return:", round(optim_compounded_return, 5), sep = " "))
 print(paste("Optimized Parameter Compound Final Return: ", round((optim_final_return) * 100, 5), "%", sep = ""))
+
+optim_cumulative_return_series_ts<-as.ts(optim_cumulative_return_series)
+
+plot(optim_cumulative_return_series_ts,xlab = 'Time',ylab = 'Cumulative Return', col='red')
+lines(SPY_cumlative_return_ts,col='blue')
 
 # Clear console and environment
 rm(list=ls())
