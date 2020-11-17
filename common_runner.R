@@ -69,6 +69,8 @@ equal_cumulative_return = equal_weights_return(df_kelly, df_moving_average)
 equal_compounded_return = get_compound_return(equal_cumulative_return[length(equal_cumulative_return)], length(equal_cumulative_return))
 equal_final_return = equal_compounded_return - 1
 
+equal_cumulative_return
+
 print(paste("SPY_Cumulative Return:", round(SPY_cumlative_return[length(SPY_cumlative_return)], 5),sep = " "))
 print(paste("Cumulative Return:", round(equal_cumulative_return[length(equal_cumulative_return)], 5), sep = " "))
 print(paste("SPY_Compounded Return:", round(SPY_compounded_return, 5), sep = " "))
@@ -78,8 +80,12 @@ print(paste("Compound Final Return: ", round((equal_final_return) * 100, 5), "%"
 
 equal_cumulative_return_ts<-as.ts(equal_cumulative_return)
 
-plot(equal_cumulative_return_ts,xlab = 'Time',ylab = 'Cumulative Return', col='red')
+y_max<-max(max(equal_cumulative_return_ts),max(SPY_cumlative_return_ts))
+y_min<-min(min(equal_cumulative_return_ts),min(SPY_cumlative_return_ts))
+
+plot(equal_cumulative_return_ts,ylim=c(y_min,y_max),xlab = 'Time',ylab = 'Cumulative Return', col='red')
 lines(SPY_cumlative_return_ts,col='blue')
+legend("topleft",legend = c("Portfolio","SPY"),col = c("red","blue"), fill = c("red","blue"))
 
 ####################################################################################
 # ************** METHODOLOGY 2 - Weights dependent on kelly value **************** #
@@ -97,10 +103,14 @@ print(paste("SPY_Compound Final Return: ", round((SPY_final_return) * 100, 5), "
 print(paste("Kelly Weighted Compounded Return:", round(kelly_compounded_return, 5), sep = " "))
 print(paste("Kelly Weighted Compound Final Return: ", round((kelly_final_return) * 100, 5), "%", sep = ""))
 
-kelly_cumulative_return_ts<-as.ts(equal_cumulative_return)
+kelly_cumulative_return_ts<-as.ts(kelly_cumulative_return)
 
-plot(kelly_cumulative_return_ts,xlab = 'Time',ylab = 'Cumulative Return', col='red')
+y_max<-max(max(kelly_cumulative_return_ts),max(SPY_cumlative_return_ts))
+y_min<-min(min(kelly_cumulative_return_ts),min(SPY_cumlative_return_ts))
+
+plot(kelly_cumulative_return_ts,ylim=c(y_min,y_max),xlab = 'Time',ylab = 'Cumulative Return', col='red')
 lines(SPY_cumlative_return_ts,col='blue')
+legend("topleft",legend = c("Portfolio","SPY"),col = c("red","blue"), fill = c("red","blue"))
 
 ################################################################################################
 # ************** METHODOLOGY 3 - Parameter choosing on maximization of profit **************** #
@@ -128,7 +138,15 @@ optim_cumulative_return_series=general_kellys_criterion_cumulative_return_series
 optim_compounded_return = get_compound_return(optim_cumulative_return, nrow(df_kelly))
 optim_final_return = optim_compounded_return - 1
 
-print("The optimal Kelly Citerion",A_optim$par)
+#Computing the corresponding SPY Return
+SPY_daily_return_corr<-SPY_daily_return[length(SPY_daily_return)-length(optim_cumulative_return_series_ts)+1:length(SPY_daily_return)]
+SPY_cumlative_return_corr<-cumprod(1+SPY_daily_return_corr[1:length(optim_cumulative_return_series_ts)])
+SPY_cumlative_return_corr_ts<-as.ts(SPY_cumlative_return_corr)
+SPY_compounded_return_corr = get_compound_return(SPY_cumlative_return_corr[length(SPY_cumlative_return_corr)], length(SPY_cumlative_return_corr))
+SPY_final_return_corr = SPY_compounded_return_corr - 1
+
+
+print(paste("The optimal Kelly Citerion :",A_optim$par))
 print(paste("SPY_Cumulative Return:", round(SPY_cumlative_return[length(SPY_cumlative_return)], 5),sep = " "))
 print(paste("Cumulative Return:", round(optim_cumulative_return, 5), sep = " "))
 print(paste("SPY_Compounded Return:", round(SPY_compounded_return, 5), sep = " "))
@@ -138,8 +156,13 @@ print(paste("Optimized Parameter Compound Final Return: ", round((optim_final_re
 
 optim_cumulative_return_series_ts<-as.ts(optim_cumulative_return_series)
 
-plot(optim_cumulative_return_series_ts,xlab = 'Time',ylab = 'Cumulative Return', col='red')
-lines(SPY_cumlative_return_ts,col='blue')
+y_max<-max(max(optim_cumulative_return_series_ts),max(SPY_cumlative_return_corr_ts))
+y_min<-min(min(optim_cumulative_return_series_ts),min(SPY_cumlative_return_corr_ts))
+
+plot(optim_cumulative_return_series_ts ,ylim=c(y_min,y_max),xlab = 'Time',ylab = 'Cumulative Return', col='red')
+lines(SPY_cumlative_return_corr_ts,col='blue')
+legend("topleft",legend = c("Portfolio","SPY"),col = c("red","blue"), fill = c("red","blue"))
+
 
 # Clear console and environment
 rm(list=ls())
