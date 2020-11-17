@@ -86,3 +86,26 @@ general_kellys_criterion <- function(a, df_kelly, df_moving_average) {
   
   return(cumulative_return[length(cumulative_return)])
 }
+
+general_kellys_criterion_cumulative_return_series <- function(a, df_kelly, df_moving_average) {
+  cumulative_return = c(1)
+  for (i in 2:nrow(df_kelly)) {
+    
+    kellys_val = as.numeric(df_kelly[i-1,])
+    avg = as.numeric(df_moving_average[i,])
+    weight = c()
+    
+    for (j in 1:length(names)) {
+      if (kellys_val[j] > a) {
+        weight = c(weight, (1 / ncol(df_kelly)))
+      } else {
+        weight = c(weight, 0)
+      }
+    }
+    
+    latest_return = cumulative_return[length(cumulative_return)]
+    append_return = latest_return * (1 + (t(avg) %*% weight))
+    cumulative_return = c(cumulative_return, append_return)
+  }
+  return(cumulative_return)
+}
