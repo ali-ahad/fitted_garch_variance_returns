@@ -29,13 +29,13 @@ codes = basic_materials[,2]
 names = basic_materials[,1]
 
 # Getting the branchmark data (SPY)
-  SPY_closing_prices = get.hist.quote(instrument = "SPY", start = "2020-01-01", end = "2020-11-13", quote = "Close", provider = "yahoo")
-  SPY_daily_return = get_daily_return(SPY_closing_prices)
-  SPY_cumlative_return=cumprod(1+SPY_daily_return)
-  SPY_cumlative_return_ts = as.ts(cumprod(1+SPY_daily_return))
-  
-  SPY_compounded_return = get_compound_return(SPY_cumlative_return[length(SPY_cumlative_return)], length(SPY_cumlative_return))
-  SPY_final_return = SPY_compounded_return - 1
+SPY_closing_prices = get.hist.quote(instrument = "SPY", start = "2020-01-01", end = "2020-11-13", quote = "Close", provider = "yahoo")
+SPY_daily_return = get_daily_return(SPY_closing_prices)
+SPY_cumlative_return=cumprod(1+SPY_daily_return)
+SPY_cumlative_return_ts = as.ts(cumprod(1+SPY_daily_return))
+
+SPY_compounded_return = get_compound_return(SPY_cumlative_return[length(SPY_cumlative_return)], length(SPY_cumlative_return))
+SPY_final_return = SPY_compounded_return - 1
 
 # Create a list of daily returns, moving averages and kellys criterion such that each index represents a stock
 for (i in 1:length(codes)) {
@@ -69,7 +69,7 @@ w<-as.matrix(rep(0.2,5))
 Long_Hold_Daily_Return<-daily_return_matrix%*%w
 Long_Hold_Cumulative_Return<-cumprod(1+Long_Hold_Daily_Return)
 Long_Hold_compounded_return = get_compound_return(Long_Hold_Cumulative_Return[length(Long_Hold_Cumulative_Return)], length(Long_Hold_Cumulative_Return))
-Long_Hold_return = Long_Hold_compounded_return - 1
+Long_Hold_final_return = Long_Hold_compounded_return - 1
 
 #################################################################
 # ************** METHODOLOGY 1 - Equal Weights **************** #
