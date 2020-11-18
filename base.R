@@ -34,6 +34,7 @@ get_optimized_garch_variance <- function(u1, garch_p = 1, garch_q = 1, var_recur
   return (fitted_variance)
 } 
 
+# Function to get daily return    
 get_daily_return <- function(closing_prices) {
   series = as.ts(closing_prices)
   daily_return <- (lag(series) - series) / series
@@ -41,17 +42,20 @@ get_daily_return <- function(closing_prices) {
   return (daily_return)
 }
 
+# Function to get moving average over a window
 get_moving_average <- function(mean_return, window) {
   moving_avg = rollmean(mean_return, window)
   return (moving_avg)
 }
 
+# Function to change list of returns to matrix
 list_to_matrix <- function(list_to_transfrom, df_col_names) {
   df = data.frame(matrix(unlist(list_to_transfrom), ncol=length(list_to_transfrom), byrow = T))
   colnames(df) = df_col_names
   return (df)
 }
 
+# Function to get compounded return at end of period
 get_compound_return <- function(cumulative_return, number_rows) {
   compound_return = (cumulative_return)^(1 / (number_rows - 1))
   return (compound_return)
