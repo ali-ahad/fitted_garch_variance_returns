@@ -99,7 +99,7 @@ n<-paste(name,"_equal_weight")
 
 pdf(n)
 
-plot(equal_cumulative_return_ts,ylim=c(y_min,y_max),xlab = 'Time(days)',ylab = 'Cumulative Return(%)', col='red')
+plot(equal_cumulative_return_ts,ylim=c(y_min,y_max),xlab = 'Time(days)',ylab = 'Cumulative Return', col='red')
 title(name)
 lines(SPY_cumlative_return_ts,col='blue')
 lines(Long_Hold_Cumulative_Return,col='green')
@@ -135,7 +135,7 @@ n<-paste(name,"_kelly_citerion")
 
 pdf(n)
 
-plot(kelly_cumulative_return_ts,ylim=c(y_min,y_max),xlab = 'Time(days)',ylab = 'Cumulative Return(%)', col='red')
+plot(kelly_cumulative_return_ts,ylim=c(y_min,y_max),xlab = 'Time(days)',ylab = 'Cumulative Return', col='red')
 title(name)
 lines(SPY_cumlative_return_ts,col='blue')
 lines(Long_Hold_Cumulative_Return,col='green')
@@ -204,7 +204,7 @@ n<-paste(name,"_Optimal_citerion")
 
 pdf(n)
 
-plot(optim_cumulative_return_series_ts ,ylim=c(y_min,y_max),xlab = 'Time(days)',ylab = 'Cumulative Return(%)', col='red')
+plot(optim_cumulative_return_series_ts ,ylim=c(y_min,y_max),xlab = 'Time(days)',ylab = 'Cumulative Return', col='red')
 title(name)
 lines(SPY_cumlative_return_corr_ts,col='blue')
 lines(Long_Hold_cumlative_return_corr_ts,col='green')
