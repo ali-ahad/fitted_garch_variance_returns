@@ -2,3 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
+basic_materials _Optimal_citerion
+basic_materials _kelly_citerion
+basic_materials _equal_weight

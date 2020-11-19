@@ -14,20 +14,15 @@ excel_read <- function(path) {
 # We use rugarch package to deal with false convergence problem.
 # Although we wont get the exact likelihood as true convergence, but we use the parameters that provides us a decent trade off between performance and time complexity
 # The default values of parameters are used as bencmark 
-get_optimized_garch_variance <- function(u1, garch_p = 1, garch_q = 1, var_recursion_init = 'all', dist_model = 'norm', arma_p = 0, arma_q = 0) {
+get_optimized_garch_variance <- function(p, q, u1) {
   fitted_variance = c()
   for (i in 3: length(u1)) {
-    garch_spec <- ugarchspec(mean.model = list(armaOrder = c(arma_p,arma_q), include.mean = TRUE, archm = TRUE, archpow = 1), 
-                             variance.model = list(model = "sGARCH", garchOrder = c(garch_p,garch_q)),
-                             distribution.model = dist_model)
-    
-    set.seed(1)
-    garch_fit <- ugarchfit(spec = garch_spec, data = u1, solver = 'hybrid', fit.control = list(rec.init = var_recursion_init))
-    coef = coef(garch_fit)
-    volatilities = garch_fit@fit$var
-    
+    res = garch(u1[1:i-1], order = c(p,q), control = garch.control(falsetol = 1e-2))
+    res$n.likeli
+    coef = as.numeric(res$coef)
+    volatilities = res$fitted.values[,1]
     tail = volatilities[length(volatilities)]
-    nthday_volatility = as.numeric(coef["omega"]) + (as.numeric(coef["alpha1"]) * u1[i-1]^2) + (as.numeric(coef["beta1"]) * tail)
+    nthday_volatility = coef[1] + (coef[2] * u1[i-1]^2) + (coef[3] * tail)
     fitted_variance = c(fitted_variance, nthday_volatility)
   }
   

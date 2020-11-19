@@ -42,7 +42,7 @@ for (i in 1:length(codes)) {
   closing_prices = get.hist.quote(instrument = codes[i], start = "2020-01-01", end = "2020-11-13", quote = "Close", provider = "yahoo")
   
   daily_return = get_daily_return(closing_prices)
-  fitted_variance = get_optimized_garch_variance(daily_return, var_recursion_init = 1e-1, dist_model = 'sstd', arma_p = 1, arma_q = 1)
+  fitted_variance = get_optimized_garch_variance(1, 1, daily_return)
   moving_average = get_moving_average(daily_return, 3)
   kellys_vector = moving_average / fitted_variance
   
@@ -116,7 +116,7 @@ kelly_final_return = kelly_compounded_return - 1
 
 kelly_cumulative_return
 
-print(paste("Long_Hold_Cumulative Return:", round(Long_Hold_cumlative_return[length(Long_Hold_cumlative_return)], 5),sep = " "))
+print(paste("Long_Hold_Cumulative Return:", round(Long_Hold_Cumulative_Return[length(Long_Hold_Cumulative_Return)], 5),sep = " "))
 print(paste("SPY_Cumulative Return:", round(SPY_cumlative_return[length(SPY_cumlative_return)], 5),sep = " "))
 print(paste("Cumulative Return:", round(kelly_cumulative_return[length(kelly_cumulative_return)], 5), sep = " "))
 print(paste("Long_Hold_Compounded Return:", round(Long_Hold_compounded_return, 5), sep = " "))
