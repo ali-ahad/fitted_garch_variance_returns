@@ -68,15 +68,15 @@ general_kellys_criterion <- function(a, df_kelly, df_daily_return) {
   for (i in 2:nrow(df_kelly)) {
     
     kellys_val = as.numeric(df_kelly[i-1,])
-    avg = as.numeric(ddf_daily_return[i,])
+    avg = as.numeric(df_daily_return[i,])
     weight = c()
-    condtional_sum = sum(kellys_val[kellys_val > 1/2])
+    condtional_sum = sum(kellys_val[kellys_val > a])
     if (condtional_sum == 0) {
       conditional_sum = 1
     }
     
     for (j in 1:length(names)) {
-      if (kellys_val[j] > 1/2) {
+      if (kellys_val[j] > a) {
         weight = c(weight, kellys_val[j] / condtional_sum)
       } else {
         weight = c(weight, 0)
@@ -98,13 +98,13 @@ general_kellys_criterion_cumulative_return_series <- function(a, df_kelly, df_da
     kellys_val = as.numeric(df_kelly[i-1,])
     avg = as.numeric(df_daily_return[i,])
     weight = c()
-    condtional_sum = sum(kellys_val[kellys_val > 1/2])
+    condtional_sum = sum(kellys_val[kellys_val > a])
     if (condtional_sum == 0) {
       conditional_sum = 1
     }
     
     for (j in 1:length(names)) {
-      if (kellys_val[j] > 1/2) {
+      if (kellys_val[j] > a) {
         weight = c(weight, kellys_val[j] / condtional_sum)
       } else {
         weight = c(weight, 0)
