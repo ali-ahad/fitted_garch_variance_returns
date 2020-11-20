@@ -5,12 +5,12 @@ library(rio)
 # ************** METHODOLOGY 1 **************** #
 # For each day assign equal weights for each stock in portfolio
 # Track cumulative returns for the portfolio over the course of dates
-equal_weights_return <- function(df_kelly, df_moving_average) {
+equal_weights_return <- function(df_kelly, df_daily_return) {
   cumulative_return = c(1)
   for (i in 2:nrow(df_kelly)) {
     
     kellys_val = as.numeric(df_kelly[i-1,])
-    avg = as.numeric(df_moving_average[i,])
+    avg = as.numeric(df_daily_return[i,])
     weight = c()
     
     for (j in 1:length(names)) {
@@ -33,12 +33,12 @@ equal_weights_return <- function(df_kelly, df_moving_average) {
 # Base this weight as a probability of kelly value over the sum of values for that day such that the kelly values are > 1/2
 # Else assign 0 as a weight.
 # Track cumulative returns for the portfolio over the course of dates
-kelly_weights_return <- function(df_kelly, df_moving_average) {
+kelly_weights_return <- function(df_kelly, df_daily_return) {
   cumulative_return = c(1)
   for (i in 2:nrow(df_kelly)) {
     
     kellys_val = as.numeric(df_kelly[i-1,])
-    avg = as.numeric(df_moving_average[i,])
+    avg = as.numeric(df_daily_return[i,])
     weight = c()
     condtional_sum = sum(kellys_val[kellys_val > 1/2])
     if (condtional_sum == 0) {
@@ -63,17 +63,21 @@ kelly_weights_return <- function(df_kelly, df_moving_average) {
 # ************** METHODOLOGY 3 **************** #
 # Find parameeter a for kelly criterion to assign equal weights such that a maximizes the cumulative return
 # Test the performance over a test set while train the model over a train set
-general_kellys_criterion <- function(a, df_kelly, df_moving_average) {
+general_kellys_criterion <- function(a, df_kelly, df_daily_return) {
   cumulative_return = c(1)
   for (i in 2:nrow(df_kelly)) {
     
     kellys_val = as.numeric(df_kelly[i-1,])
-    avg = as.numeric(df_moving_average[i,])
+    avg = as.numeric(ddf_daily_return[i,])
     weight = c()
+    condtional_sum = sum(kellys_val[kellys_val > 1/2])
+    if (condtional_sum == 0) {
+      conditional_sum = 1
+    }
     
     for (j in 1:length(names)) {
-      if (kellys_val[j] > a) {
-        weight = c(weight, (1 / ncol(df_kelly)))
+      if (kellys_val[j] > 1/2) {
+        weight = c(weight, kellys_val[j] / condtional_sum)
       } else {
         weight = c(weight, 0)
       }
@@ -87,17 +91,21 @@ general_kellys_criterion <- function(a, df_kelly, df_moving_average) {
   return(cumulative_return[length(cumulative_return)])
 }
 
-general_kellys_criterion_cumulative_return_series <- function(a, df_kelly, df_moving_average) {
+general_kellys_criterion_cumulative_return_series <- function(a, df_kelly, df_daily_return) {
   cumulative_return = c(1)
   for (i in 2:nrow(df_kelly)) {
     
     kellys_val = as.numeric(df_kelly[i-1,])
-    avg = as.numeric(df_moving_average[i,])
+    avg = as.numeric(df_daily_return[i,])
     weight = c()
+    condtional_sum = sum(kellys_val[kellys_val > 1/2])
+    if (condtional_sum == 0) {
+      conditional_sum = 1
+    }
     
     for (j in 1:length(names)) {
-      if (kellys_val[j] > a) {
-        weight = c(weight, (1 / ncol(df_kelly)))
+      if (kellys_val[j] > 1/2) {
+        weight = c(weight, kellys_val[j] / condtional_sum)
       } else {
         weight = c(weight, 0)
       }

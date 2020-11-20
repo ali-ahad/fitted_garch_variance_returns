@@ -74,7 +74,7 @@ Long_Hold_final_return = Long_Hold_compounded_return - 1
 #################################################################
 # ************** METHODOLOGY 1 - Equal Weights **************** #
 ################################################################
-equal_cumulative_return = equal_weights_return(df_kelly, df_moving_average)
+equal_cumulative_return = equal_weights_return(df_kelly, df_daily_return)
 equal_compounded_return = get_compound_return(equal_cumulative_return[length(equal_cumulative_return)], length(equal_cumulative_return))
 equal_final_return = equal_compounded_return - 1
 
@@ -110,7 +110,7 @@ dev.off()
 ####################################################################################
 # ************** METHODOLOGY 2 - Weights dependent on kelly value **************** #
 ####################################################################################
-kelly_cumulative_return = kelly_weights_return(df_kelly, df_moving_average)
+kelly_cumulative_return = kelly_weights_return(df_kelly, df_daily_return)
 kelly_compounded_return = get_compound_return(kelly_cumulative_return[length(kelly_cumulative_return)], length(kelly_cumulative_return))
 kelly_final_return = kelly_compounded_return - 1
 
@@ -152,12 +152,12 @@ k_train = df_kelly[1 : k_train_length,]
 k_test = df_kelly[seq(k_train_length + 1, nrow(df_kelly)),]
 
 # Daily return dataframe train test split
-m_train_length = ceiling(0.8*nrow(df_moving_average))
-avg_train = df_moving_average[1: m_train_length, ]
-avg_test = df_moving_average[seq(m_train_length + 1, nrow(df_moving_average)),]
+m_train_length = ceiling(0.8*nrow(df_daily_return))
+avg_train = df_daily_return[1: m_train_length, ]
+avg_test = df_daily_return[seq(m_train_length + 1, nrow(df_daily_return)),]
 
 a_initial = 0.5
-A_optim = optim(a_initial, general_kellys_criterion, df_kelly = k_train, df_moving_average= avg_train, method = 'Brent', lower = 0 , upper = 1,control = list(fnscale = -1))
+A_optim = optim(a_initial, general_kellys_criterion, df_kelly = k_train, df_daily_return = avg_train, method = 'Brent', lower = 0 , upper = 1,control = list(fnscale = -1))
 A_optim
 
 # Use the test set to see the performance
@@ -167,7 +167,7 @@ optim_cumulative_return
 optim_cumulative_return_series=general_kellys_criterion_cumulative_return_series(A_optim$par, k_test, avg_test)
 optim_cumulative_return_series_ts<-as.ts(optim_cumulative_return_series)
 
-optim_compounded_return = get_compound_return(optim_cumulative_return, nrow(df_kelly))
+optim_compounded_return = get_compound_return(optim_cumulative_return, nrow(k_test))
 optim_final_return = optim_compounded_return - 1
 
 #Computing the corresponding SPY Return
