@@ -45,7 +45,7 @@ get_moving_average <- function(mean_return, window) {
 
 # Function to change list of returns to matrix
 list_to_matrix <- function(list_to_transfrom, df_col_names) {
-  df = data.frame(matrix(unlist(list_to_transfrom), ncol=length(list_to_transfrom), byrow = T))
+  df = data.frame(matrix = matrix(unlist(list_to_transfrom), ncol = length(df_col_names)))
   colnames(df) = df_col_names
   return (df)
 }
