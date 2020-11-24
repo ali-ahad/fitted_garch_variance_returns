@@ -73,7 +73,7 @@ df_moving_average
 df_kelly = list_to_matrix(kellys_list, names)
 df_kelly
 
-# Computing the Long and Hold Strategy on target Stock evenly
+# Computing the Long and Hold Strategy on target Stock evenly reference for methodology 1
 daily_return_matrix<-as.matrix(df_daily_return)
 w<-as.matrix(rep(0.2,5))
 Long_Hold_Daily_Return<-daily_return_matrix%*%w
@@ -90,13 +90,13 @@ equal_final_return = equal_compounded_return - 1
 
 equal_cumulative_return
 
-print(paste("Long_Hold_Cumulative Return:", round(Long_Hold_Cumulative_Return[length(Long_Hold_Cumulative_Return)], 5),sep = " "))
+print(paste("Reference_Cumulative Return:", round(Long_Hold_Cumulative_Return[length(Long_Hold_Cumulative_Return)], 5),sep = " "))
 print(paste("SPY_Cumulative Return:", round(SPY_cumlative_return[length(SPY_cumlative_return)], 5),sep = " "))
 print(paste("Cumulative Return:", round(equal_cumulative_return[length(equal_cumulative_return)], 5), sep = " "))
 print(paste("SPY_Compounded Return:", round(SPY_compounded_return, 5), sep = " "))
 print(paste("SPY_Compound Final Return: ", round((SPY_final_return) * 100, 5), "%", sep = ""))
-print(paste("Long_Hold_Compounded Return:", round(Long_Hold_compounded_return, 5), sep = " "))
-print(paste("Long_Hold_Compound Final Return: ", round((Long_Hold_final_return) * 100, 5), "%", sep = ""))
+print(paste("Reference_Compounded Return:", round(Long_Hold_compounded_return, 5), sep = " "))
+print(paste("Reference_Compound Final Return: ", round((Long_Hold_final_return) * 100, 5), "%", sep = ""))
 print(paste("Compounded Return:", round(equal_compounded_return, 5), sep = " "))
 print(paste("Compound Final Return: ", round((equal_final_return) * 100, 5), "%", sep = ""))
 
@@ -113,7 +113,7 @@ plot(equal_cumulative_return_ts,ylim=c(y_min,y_max),xlab = 'Time(days)',ylab = '
 title(name)
 lines(SPY_cumlative_return_ts,col='blue')
 lines(Long_Hold_Cumulative_Return,col='green')
-legend("topleft",legend = c("Portfolio_Equal_Weight","SPY","Long&Hold"),col = c("red","blue","green"), fill = c("red","blue","green"))
+legend("topleft",legend = c("Portfolio_Equal_Weight","SPY","Reference"),col = c("red","blue","green"), fill = c("red","blue","green"))
 
 dev.off()
 
@@ -126,11 +126,16 @@ kelly_final_return = kelly_compounded_return - 1
 
 kelly_cumulative_return
 
-print(paste("Long_Hold_Cumulative Return:", round(Long_Hold_Cumulative_Return[length(Long_Hold_Cumulative_Return)], 5),sep = " "))
+kelly_reference_cumulative_return = kelly_weights_reference_return(df_kelly, df_daily_return)
+kelly_reference_compounded_return = get_compound_return(kelly_reference_cumulative_return[length(kelly_reference_cumulative_return)], length(kelly_reference_cumulative_return))
+kelly_reference_final_return = kelly_reference_compounded_return - 1
+
+
+print(paste("Reference_Cumulative Return:", round(kelly_reference_cumulative_return[length(kelly_reference_cumulative_return)], 5),sep = " "))
 print(paste("SPY_Cumulative Return:", round(SPY_cumlative_return[length(SPY_cumlative_return)], 5),sep = " "))
 print(paste("Cumulative Return:", round(kelly_cumulative_return[length(kelly_cumulative_return)], 5), sep = " "))
-print(paste("Long_Hold_Compounded Return:", round(Long_Hold_compounded_return, 5), sep = " "))
-print(paste("Long_Hold_Compound Final Return: ", round((Long_Hold_final_return) * 100, 5), "%", sep = ""))
+print(paste("Reference_Compounded Return:", round(kelly_reference_compounded_return, 5), sep = " "))
+print(paste("Reference_Compound Final Return: ", round((kelly_reference_final_return) * 100, 5), "%", sep = ""))
 print(paste("SPY_Compounded Return:", round(SPY_compounded_return, 5), sep = " "))
 print(paste("SPY_Compound Final Return: ", round((SPY_final_return) * 100, 5), "%", sep = ""))
 print(paste("Kelly Weighted Compounded Return:", round(kelly_compounded_return, 5), sep = " "))
@@ -138,8 +143,8 @@ print(paste("Kelly Weighted Compound Final Return: ", round((kelly_final_return)
 
 kelly_cumulative_return_ts<-as.ts(kelly_cumulative_return)
 
-y_max<-max(max(kelly_cumulative_return_ts),max(SPY_cumlative_return_ts),max(Long_Hold_Cumulative_Return))
-y_min<-min(min(kelly_cumulative_return_ts),min(SPY_cumlative_return_ts),min(Long_Hold_Cumulative_Return))
+y_max<-max(max(kelly_cumulative_return_ts),max(SPY_cumlative_return_ts),max(kelly_reference_cumulative_return))
+y_min<-min(min(kelly_cumulative_return_ts),min(SPY_cumlative_return_ts),min(kelly_reference_cumulative_return))
 
 n<-paste(name,"_kelly_citerion")
 
@@ -148,8 +153,8 @@ pdf(n)
 plot(kelly_cumulative_return_ts,ylim=c(y_min,y_max),xlab = 'Time(days)',ylab = 'Cumulative Return', col='red')
 title(name)
 lines(SPY_cumlative_return_ts,col='blue')
-lines(Long_Hold_Cumulative_Return,col='green')
-legend("topleft",legend = c("Portfolio_Kelly_Weight","SPY","Long&Hold"),col = c("red","blue","green"), fill = c("red","blue","green"))
+lines(kelly_reference_cumulative_return,col='green')
+legend("topleft",legend = c("Portfolio_Kelly_Weight","SPY","Reference"),col = c("red","blue","green"), fill = c("red","blue","green"))
 
 dev.off()
 
@@ -188,19 +193,19 @@ SPY_cumlative_return_corr_ts<-as.ts(SPY_cumlative_return_corr)
 SPY_compounded_return_corr = get_compound_return(SPY_cumlative_return_corr[length(SPY_cumlative_return_corr)], length(SPY_cumlative_return_corr))
 SPY_final_return_corr = SPY_compounded_return_corr - 1
 
-#Computing the corresponding Long&Hold Return
-Long_Hold_daily_return_corr<-Long_Hold_Daily_Return[length(Long_Hold_Daily_Return)-length(optim_cumulative_return_series_ts)+1:length(Long_Hold_Daily_Return)]
-Long_Hold_cumlative_return_corr<-cumprod(1+Long_Hold_daily_return_corr[1:length(optim_cumulative_return_series_ts)])
-Long_Hold_cumlative_return_corr_ts<-as.ts(Long_Hold_cumlative_return_corr)
-Long_Hold_compounded_return_corr = get_compound_return(Long_Hold_cumlative_return_corr[length(Long_Hold_cumlative_return_corr)], length(Long_Hold_cumlative_return_corr))
-Long_Hold_final_return_corr = Long_Hold_compounded_return_corr - 1
+#Computing the corresponding reference Return
+a<-kelly_cumulative_return[length(kelly_cumulative_return)-length(optim_cumulative_return_series_ts)+1:length(kelly_cumulative_return)]/kelly_cumulative_return[length(kelly_cumulative_return)-length(optim_cumulative_return_series_ts)+1]
+optim_reference_cumlative_return<-a[1:length(optim_cumulative_return_series_ts)]
+optim_reference_cumlative_return_ts<-as.ts(optim_reference_cumlative_return)
+optim_reference_compounded_return = get_compound_return(optim_reference_cumlative_return[length(optim_reference_cumlative_return)], length(optim_reference_cumlative_return))
+optim_reference_final_return = optim_reference_compounded_return - 1
 
 print(paste("The optimal Kelly Citerion :",A_optim$par))
-print(paste("Long_Hold_Cumulative Return:", round(Long_Hold_cumlative_return_corr[length(Long_Hold_cumlative_return_corr)], 5),sep = " "))
+print(paste("Reference_Cumulative Return:", round(optim_reference_cumlative_return[optim_reference_cumlative_return)], 5),sep = " "))
 print(paste("SPY_Cumulative Return:", round(SPY_cumlative_return_corr[length(SPY_cumlative_return_corr)], 5),sep = " "))
 print(paste("Cumulative Return:", round(optim_cumulative_return, 5), sep = " "))
-print(paste("Long_Hold_Compounded Return:", round(Long_Hold_compounded_return_corr, 5), sep = " "))
-print(paste("Long_Hold_Compound Final Return: ", round((Long_Hold_final_return_corr) * 100, 5), "%", sep = ""))
+print(paste("Reference_Compounded Return:", round(optim_reference_compounded_return, 5), sep = " "))
+print(paste("Reference_Compound Final Return: ", round((optim_reference_final_return) * 100, 5), "%", sep = ""))
 print(paste("SPY_Compounded Return:", round(SPY_compounded_return_corr, 5), sep = " "))
 print(paste("SPY_Compound Final Return: ", round((SPY_final_return_corr) * 100, 5), "%", sep = ""))
 print(paste("Optimized Parameter Compounded Return:", round(optim_compounded_return, 5), sep = " "))
@@ -208,8 +213,8 @@ print(paste("Optimized Parameter Compound Final Return: ", round((optim_final_re
 
 optim_cumulative_return_series_ts<-as.ts(optim_cumulative_return_series)
 
-y_max<-max(max(optim_cumulative_return_series_ts),max(SPY_cumlative_return_corr_ts),max(Long_Hold_cumlative_return_corr_ts))
-y_min<-min(min(optim_cumulative_return_series_ts),min(SPY_cumlative_return_corr_ts),min(Long_Hold_cumlative_return_corr_ts))
+y_max<-max(max(optim_cumulative_return_series_ts),max(SPY_cumlative_return_corr_ts),max(optim_reference_cumlative_return_ts))
+y_min<-min(min(optim_cumulative_return_series_ts),min(SPY_cumlative_return_corr_ts),min(optim_reference_cumlative_return_ts))
 
 n<-paste(name,"_Optimal_citerion")
 
@@ -218,8 +223,8 @@ pdf(n)
 plot(optim_cumulative_return_series_ts ,ylim=c(y_min,y_max),xlab = 'Time(days)',ylab = 'Cumulative Return', col='red')
 title(name)
 lines(SPY_cumlative_return_corr_ts,col='blue')
-lines(Long_Hold_cumlative_return_corr_ts,col='green')
-legend("topleft",legend = c("Portfolio_Optimal_Citerion","SPY","Long&Hold"),col = c("red","blue","green"), fill = c("red","blue","green"))
+lines(optim_reference_cumlative_return_ts,col='green')
+legend("topleft",legend = c("Portfolio_Optimal_Citerion","SPY","Reference"),col = c("red","blue","green"), fill = c("red","blue","green"))
 
 dev.off()
 
