@@ -60,6 +60,35 @@ kelly_weights_return <- function(df_kelly, df_daily_return) {
   return (cumulative_return)
 }
 
+##The reference portfolio for Methodology 2 (equal weight among qualified stock)
+
+kelly_weights_reference_return <- function(df_kelly, df_daily_return) {
+  cumulative_return = c(1)
+  for (i in 2:nrow(df_kelly)) {
+    
+    kellys_val = as.numeric(df_kelly[i-1,])
+    avg = as.numeric(df_daily_return[i,])
+    weight = c()
+    condtional_sum = length(kellys_val[kellys_val > 1/2])
+    if (condtional_sum == 0) {
+      conditional_sum = 1
+    }
+    
+    for (j in 1:length(names)) {
+      if (kellys_val[j] > 1/2) {
+        weight = c(weight, 1 / condtional_sum)
+      } else {
+        weight = c(weight, 0)
+      }
+    }
+    
+    latest_return = cumulative_return[length(cumulative_return)]
+    append_return = latest_return * (1 + (t(avg) %*% weight)-0.005)
+    cumulative_return = c(cumulative_return, append_return)
+  }
+  return (cumulative_return)
+}
+
 # ************** METHODOLOGY 3 **************** #
 # Find parameeter a for kelly criterion to assign equal weights such that a maximizes the cumulative return
 # Test the performance over a test set while train the model over a train set
