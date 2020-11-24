@@ -10,7 +10,7 @@ equal_weights_return <- function(df_kelly, df_daily_return) {
   for (i in 2:nrow(df_kelly)) {
     
     kellys_val = as.numeric(df_kelly[i-1,])
-    avg = as.numeric(df_daily_return[i,])
+    avg = as.numeric(df_daily_return[i,]) - 0.001
     weight = c()
     
     for (j in 1:length(names)) {
@@ -22,7 +22,7 @@ equal_weights_return <- function(df_kelly, df_daily_return) {
     }
     
     latest_return = cumulative_return[length(cumulative_return)]
-    append_return = latest_return * (1 + (t(avg) %*% weight)-0.001)
+    append_return = latest_return * (1 + (t(avg) %*% weight))
     cumulative_return = c(cumulative_return, append_return)
   } 
   return (cumulative_return)
@@ -38,7 +38,7 @@ kelly_weights_return <- function(df_kelly, df_daily_return) {
   for (i in 2:nrow(df_kelly)) {
     
     kellys_val = as.numeric(df_kelly[i-1,])
-    avg = as.numeric(df_daily_return[i,])
+    avg = as.numeric(df_daily_return[i,]) - 0.001
     weight = c()
     condtional_sum = sum(kellys_val[kellys_val > 1/2])
     if (condtional_sum == 0) {
@@ -67,7 +67,7 @@ kelly_weights_reference_return <- function(df_kelly, df_daily_return) {
   for (i in 2:nrow(df_kelly)) {
     
     kellys_val = as.numeric(df_kelly[i-1,])
-    avg = as.numeric(df_daily_return[i,])
+    avg = as.numeric(df_daily_return[i,]) - 0.001
     weight = c()
     condtional_sum = length(kellys_val[kellys_val > 1/2])
     if (condtional_sum == 0) {
@@ -97,7 +97,7 @@ general_kellys_criterion <- function(a, df_kelly, df_daily_return) {
   for (i in 2:nrow(df_kelly)) {
     
     kellys_val = as.numeric(df_kelly[i-1,])
-    avg = as.numeric(df_daily_return[i,])
+    avg = as.numeric(df_daily_return[i,]) - 0.001
     weight = c()
     condtional_sum = sum(kellys_val[kellys_val > a])
     if (condtional_sum == 0) {
@@ -125,7 +125,7 @@ general_kellys_criterion_cumulative_return_series <- function(a, df_kelly, df_da
   for (i in 2:nrow(df_kelly)) {
     
     kellys_val = as.numeric(df_kelly[i-1,])
-    avg = as.numeric(df_daily_return[i,])
+    avg = as.numeric(df_daily_return[i,]) - 0.001
     weight = c()
     condtional_sum = sum(kellys_val[kellys_val > a])
     if (condtional_sum == 0) {
