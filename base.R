@@ -17,7 +17,7 @@ excel_read <- function(path) {
 get_optimized_garch_variance <- function(p, q, u1) {
   fitted_variance = c()
   for (i in 3: length(u1)) {
-    res = garch(u1[1:i-1], order = c(p,q), control = garch.control(falsetol = 1e-2))
+    res = garch(tail(u1[1:i-1], n = 20), order = c(p,q), control = garch.control(falsetol = 1e-2))
     res$n.likeli
     coef = as.numeric(res$coef)
     volatilities = res$fitted.values[,1]
@@ -30,9 +30,10 @@ get_optimized_garch_variance <- function(p, q, u1) {
 } 
 
 # Function to get daily return    
-get_daily_return <- function(closing_prices) {
-  series = as.ts(closing_prices)
-  daily_return <- (lag(series) - series) / series
+get_daily_return <- function(prices) {
+  opening = as.ts(prices[,1])
+  closing = as.ts(prices[,2])
+  daily_return = (closing - opening) / opening
   daily_return = daily_return[!is.na(daily_return)]
   return (daily_return)
 }

@@ -24,14 +24,16 @@ moving_average_list = list()
 kellys_list = list()
 
 # Change the dataframe here for appropriate codes and names
-name = "Basic Materials"
+name = "Technology"
 codes = basic_materials[,2]
 codes
 names = basic_materials[,1]
 
 
 # Getting the branchmark data (SPY)
-SPY_closing_prices = get.hist.quote(instrument = "SPY", start = "2019-11-12", end = "2020-11-13", quote = "Close", provider = "yahoo")
+SPY_closing_prices = get.hist.quote(instrument = "SPY", start = "2019-11-12", end = "2020-11-13", quote = c("Open" ,"Close"), provider = "yahoo")
+SPY_closing_prices
+
 SPY_daily_return = get_daily_return(SPY_closing_prices)
 
 SPY_cumlative_return=cumprod(1+SPY_daily_return)
@@ -42,9 +44,12 @@ SPY_final_return = SPY_compounded_return - 1
 
 # Create a list of daily returns, moving averages and kellys criterion such that each index represents a stock
 for (i in 1:length(codes)) {
-  closing_prices = get.hist.quote(instrument = codes[i], start = "2019-11-12", end = "2020-11-13", quote = "Close", provider = "yahoo")
+  closing_prices = get.hist.quote(instrument = codes[i], start = "2019-11-12", end = "2020-11-13", quote = c("Open","Close"), provider = "yahoo")
+  closing_prices
   
   daily_return = get_daily_return(closing_prices)
+  as.ts(daily_return)  
+  
   fitted_variance = get_optimized_garch_variance(1, 1, daily_return)
   moving_average = get_moving_average(daily_return, 3)
   kellys_vector = moving_average / fitted_variance
