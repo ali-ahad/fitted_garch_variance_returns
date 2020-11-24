@@ -24,14 +24,14 @@ moving_average_list = list()
 kellys_list = list()
 
 # Change the dataframe here for appropriate codes and names
-name = "Technology"
+name = "basic_materials"
 codes = basic_materials[,2]
 codes
 names = basic_materials[,1]
 
 
 # Getting the branchmark data (SPY)
-SPY_closing_prices = get.hist.quote(instrument = "SPY", start = "2019-11-12", end = "2020-11-13", quote = c("Open" ,"Close"), provider = "yahoo")
+SPY_closing_prices = get.hist.quote(instrument = "SPY", start = "2016-11-12", end = "2020-11-13", quote = c("Open" ,"Close"), provider = "yahoo")
 SPY_closing_prices
 
 SPY_daily_return = get_daily_return(SPY_closing_prices)
@@ -46,7 +46,7 @@ SPY_final_return = SPY_compounded_return - 1
 
 # Create a list of daily returns, moving averages and kellys criterion such that each index represents a stock
 for (i in 1:length(codes)) {
-  closing_prices = get.hist.quote(instrument = codes[i], start = "2019-11-12", end = "2020-11-13", quote = c("Open","Close"), provider = "yahoo")
+  closing_prices = get.hist.quote(instrument = codes[i], start = "2016-11-12", end = "2020-11-13", quote = c("Open","Close"), provider = "yahoo")
   closing_prices
   
   daily_return = get_daily_return(closing_prices)
@@ -187,8 +187,8 @@ optim_compounded_return = get_compound_return(optim_cumulative_return, nrow(k_te
 optim_final_return = optim_compounded_return - 1
 
 #Computing the corresponding SPY Return
-SPY_daily_return_corr<-SPY_daily_return[length(SPY_daily_return)-length(optim_cumulative_return_series_ts)+1:length(SPY_daily_return)]
-SPY_cumlative_return_corr<-cumprod(1+SPY_daily_return_corr[1:length(optim_cumulative_return_series_ts)])
+b<-(SPY_cumlative_return[length(SPY_cumlative_return)-length(optim_cumulative_return_series_ts)+1:length(SPY_cumlative_return)])/SPY_cumlative_return[length(SPY_cumlative_return)-length(optim_cumulative_return_series_ts)+1]
+SPY_cumlative_return_corr<-b[1:length(optim_cumulative_return_series_ts)]
 SPY_cumlative_return_corr_ts<-as.ts(SPY_cumlative_return_corr)
 SPY_compounded_return_corr = get_compound_return(SPY_cumlative_return_corr[length(SPY_cumlative_return_corr)], length(SPY_cumlative_return_corr))
 SPY_final_return_corr = SPY_compounded_return_corr - 1
@@ -201,7 +201,7 @@ optim_reference_compounded_return = get_compound_return(optim_reference_cumlativ
 optim_reference_final_return = optim_reference_compounded_return - 1
 
 print(paste("The optimal Kelly Citerion :",A_optim$par))
-print(paste("Reference_Cumulative Return:", round(optim_reference_cumlative_return[optim_reference_cumlative_return)], 5),sep = " "))
+print(paste("Reference_Cumulative Return:", round(optim_reference_cumlative_return[length(optim_reference_cumlative_return)], 5),sep = " "))
 print(paste("SPY_Cumulative Return:", round(SPY_cumlative_return_corr[length(SPY_cumlative_return_corr)], 5),sep = " "))
 print(paste("Cumulative Return:", round(optim_cumulative_return, 5), sep = " "))
 print(paste("Reference_Compounded Return:", round(optim_reference_compounded_return, 5), sep = " "))
