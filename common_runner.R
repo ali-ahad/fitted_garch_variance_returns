@@ -35,9 +35,11 @@ SPY_closing_prices = get.hist.quote(instrument = "SPY", start = "2019-11-12", en
 SPY_closing_prices
 
 SPY_daily_return = get_daily_return(SPY_closing_prices)
+SPY_daily_return
 
 SPY_cumlative_return=cumprod(1+SPY_daily_return)
 SPY_cumlative_return_ts = as.ts(cumprod(1+SPY_daily_return))
+SPY_cumlative_return_ts
 
 SPY_compounded_return = get_compound_return(SPY_cumlative_return[length(SPY_cumlative_return)], length(SPY_cumlative_return))
 SPY_final_return = SPY_compounded_return - 1
