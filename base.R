@@ -53,6 +53,6 @@ list_to_matrix <- function(list_to_transfrom, df_col_names) {
 
 # Function to get compounded return at end of period
 get_compound_return <- function(cumulative_return, number_rows) {
-  compound_return = (cumulative_return)^(1 / (number_rows))-1
+  compound_return = (cumulative_return)^(1 / (number_rows))
   return (compound_return)
 }
