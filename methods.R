@@ -22,7 +22,7 @@ equal_weights_return <- function(df_kelly, df_daily_return) {
     }
     
     latest_return = cumulative_return[length(cumulative_return)]
-    append_return = latest_return * (1 + (t(avg) %*% weight)-0.005)
+    append_return = latest_return * (1 + (t(avg) %*% weight)-0.001)
     cumulative_return = c(cumulative_return, append_return)
   } 
   return (cumulative_return)
@@ -54,7 +54,7 @@ kelly_weights_return <- function(df_kelly, df_daily_return) {
     }
     
     latest_return = cumulative_return[length(cumulative_return)]
-    append_return = latest_return * (1 + (t(avg) %*% weight)-0.005)
+    append_return = latest_return * (1 + (t(avg) %*% weight)-0.001)
     cumulative_return = c(cumulative_return, append_return)
   }
   return (cumulative_return)
@@ -83,7 +83,7 @@ kelly_weights_reference_return <- function(df_kelly, df_daily_return) {
     }
     
     latest_return = cumulative_return[length(cumulative_return)]
-    append_return = latest_return * (1 + (t(avg) %*% weight)-0.005)
+    append_return = latest_return * (1 + (t(avg) %*% weight)-0.001)
     cumulative_return = c(cumulative_return, append_return)
   }
   return (cumulative_return)
@@ -113,7 +113,7 @@ general_kellys_criterion <- function(a, df_kelly, df_daily_return) {
     }
     
     latest_return = cumulative_return[length(cumulative_return)]
-    append_return = latest_return * (1 + (t(avg) %*% weight)-0.005)
+    append_return = latest_return * (1 + (t(avg) %*% weight)-0.001)
     cumulative_return = c(cumulative_return, append_return)
   }
   
@@ -141,7 +141,7 @@ general_kellys_criterion_cumulative_return_series <- function(a, df_kelly, df_da
     }
     
     latest_return = cumulative_return[length(cumulative_return)]
-    append_return = latest_return * (1 + (t(avg) %*% weight)-0.005)
+    append_return = latest_return * (1 + (t(avg) %*% weight)-0.001)
     cumulative_return = c(cumulative_return, append_return)
   }
   return(cumulative_return)
