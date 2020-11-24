@@ -24,14 +24,16 @@ moving_average_list = list()
 kellys_list = list()
 
 # Change the dataframe here for appropriate codes and names
-name = "energy"
+name = "Basic Materials"
 codes = basic_materials[,2]
 codes
 names = basic_materials[,1]
 
+
 # Getting the branchmark data (SPY)
 SPY_closing_prices = get.hist.quote(instrument = "SPY", start = "2019-11-12", end = "2020-11-13", quote = "Close", provider = "yahoo")
 SPY_daily_return = get_daily_return(SPY_closing_prices)
+
 SPY_cumlative_return=cumprod(1+SPY_daily_return)
 SPY_cumlative_return_ts = as.ts(cumprod(1+SPY_daily_return))
 
@@ -148,12 +150,12 @@ dev.off()
 # ************** METHODOLOGY 3 - Parameter choosing on maximization of profit **************** #
 ################################################################################################
 # Kellys criterion dataframe train test split
-k_train_length = ceiling(0.8*nrow(df_kelly))
+k_train_length = ceiling(0.7*nrow(df_kelly))
 k_train = df_kelly[1 : k_train_length,]
 k_test = df_kelly[seq(k_train_length + 1, nrow(df_kelly)),]
 
 # Daily return dataframe train test split
-m_train_length = ceiling(0.8*nrow(df_daily_return))
+m_train_length = ceiling(0.7*nrow(df_daily_return))
 avg_train = df_daily_return[1: m_train_length, ]
 avg_test = df_daily_return[seq(m_train_length + 1, nrow(df_daily_return)),]
 
@@ -167,6 +169,7 @@ optim_cumulative_return
 
 optim_cumulative_return_series=general_kellys_criterion_cumulative_return_series(A_optim$par, k_test, avg_test)
 optim_cumulative_return_series_ts<-as.ts(optim_cumulative_return_series)
+optim_cumulative_return_series_ts
 
 optim_compounded_return = get_compound_return(optim_cumulative_return, nrow(k_test))
 optim_final_return = optim_compounded_return - 1
