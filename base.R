@@ -16,13 +16,14 @@ excel_read <- function(path) {
 # The default values of parameters are used as bencmark 
 get_optimized_garch_variance <- function(p, q, u1) {
   fitted_variance = c()
-  for (i in 3: length(u1)) {
-    res = garch(tail(u1[1:i-1], n = 20), order = c(p,q), control = garch.control(falsetol = 1e-2))
+  u2 = replace(u1, u1 == 0, 0.00000001)
+  for (i in 3: length(u2)) {
+    res = garch(tail(u2[1:i-1], n = 20), order = c(p,q), control = garch.control(falsetol = 1e-2))
     res$n.likeli
     coef = as.numeric(res$coef)
     volatilities = res$fitted.values[,1]
     tail = (volatilities[length(volatilities)])^2
-    nthday_volatility = coef[1] + (coef[2] * u1[i-1]^2) + (coef[3] * tail)
+    nthday_volatility = coef[1] + (coef[2] * u2[i-1]^2) + (coef[3] * tail)
     fitted_variance = c(fitted_variance, nthday_volatility)
   }
   

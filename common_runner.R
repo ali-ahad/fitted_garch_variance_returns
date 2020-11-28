@@ -6,7 +6,7 @@ source("methods.R")
 cur_dir <- getwd()
 setwd(cur_dir)
 
-path = paste(cur_dir,'/datasets/nano_cap.xlsx', sep = "")
+path = paste(cur_dir,'/datasets/large_cap.xlsx', sep = "")
 df = excel_read(path)
 basic_materials = df$basic_materials
 capital_goods = df$capital_goods
@@ -25,14 +25,14 @@ moving_average_list = list()
 kellys_list = list()
 
 # Change the dataframe here for appropriate codes and names
-name = "Capital Goods"
-codes = capital_goods[,2]
+name = "Consumer Cyclical"
+codes = transportation[,2]
 codes
-names = capital_goods[,1]
+names = financial[,1]
 
 
 # Getting the branchmark data (SPY)
-SPY_closing_prices = get.hist.quote(instrument = "SPY", start = "2019-01-01", end = "2020-11-13", quote = c("Open" ,"Close"), provider = "yahoo")
+SPY_closing_prices = get.hist.quote(instrument = "SPY", start = "2016-01-01", end = "2020-11-13", quote = c("Open" ,"Close"), provider = "yahoo")
 SPY_closing_prices
 
 SPY_daily_return = get_daily_return(SPY_closing_prices)
@@ -47,22 +47,29 @@ SPY_final_return = SPY_compounded_return - 1
 
 # Create a list of daily returns, moving averages and kellys criterion such that each index represents a stock
 for (i in 1:length(codes)) {
-  closing_prices = get.hist.quote(instrument = codes[i], start = "2019-01-01", end = "2020-11-13", quote = c("Open","Close"), provider = "yahoo")
+  closing_prices = get.hist.quote(instrument = codes[i], start = "2016-01-01", end = "2020-11-13", quote = c("Open","Close"), provider = "yahoo")
   closing_prices
   
   daily_return = get_daily_return(closing_prices)
   as.ts(daily_return)  
   
   fitted_variance = get_optimized_garch_variance(1, 1, daily_return)
+  
   moving_average = get_moving_average(daily_return, 3)
   kellys_vector = moving_average / fitted_variance
   
-  daily_return_list[[i]] = daily_return
+  daily_return_list[[i]] = get_daily_return(closing_prices)
   moving_average_list[[i]] = moving_average
   kellys_list[[i]] = kellys_vector
 }
 
 # Transform daily return list to dataframe
+length(daily_return_list[[1]])
+length(daily_return_list[[2]])
+length(daily_return_list[[3]])
+length(daily_return_list[[4]])
+length(daily_return_list[[5]])
+codes
 df_daily_return = list_to_matrix(daily_return_list, names)
 df_daily_return
 
@@ -232,3 +239,4 @@ dev.off()
 # Clear console and environment
 rm(list=ls())
 cat("\014")  # ctrl+L
+
