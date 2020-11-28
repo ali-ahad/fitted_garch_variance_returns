@@ -26,9 +26,9 @@ kellys_list = list()
 
 # Change the dataframe here for appropriate codes and names
 name = "Transportation"
-codes = transportation[,2]
+codes = basic_materials[,2]
 codes
-names = transportation[,1]
+names = basic_materials[,1]
 
 
 # Getting the branchmark data (SPY)

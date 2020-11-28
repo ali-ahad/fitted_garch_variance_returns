@@ -23,7 +23,7 @@ get_optimized_garch_variance <- function(p, q, u1) {
     volatilities = res$fitted.values[,1]
     tail = volatilities[length(volatilities)]
     nthday_volatility = coef[1] + (coef[2] * u1[i-1]^2) + (coef[3] * tail)
-    fitted_variance = c(fitted_variance, nthday_volatility)
+    fitted_variance = c(fitted_variance, nthday_volatility^2)
   }
   
   return (fitted_variance)
