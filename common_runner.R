@@ -6,7 +6,7 @@ source("methods.R")
 cur_dir <- getwd()
 setwd(cur_dir)
 
-path = paste(cur_dir,'/datasets/profit_earnings.xlsx', sep = "")
+path = paste(cur_dir,'/datasets/nano_cap.xlsx', sep = "")
 df = excel_read(path)
 basic_materials = df$basic_materials
 capital_goods = df$capital_goods
@@ -25,14 +25,14 @@ moving_average_list = list()
 kellys_list = list()
 
 # Change the dataframe here for appropriate codes and names
-name = "Transportation"
-codes = basic_materials[,2]
+name = "Capital Goods"
+codes = capital_goods[,2]
 codes
-names = basic_materials[,1]
+names = capital_goods[,1]
 
 
 # Getting the branchmark data (SPY)
-SPY_closing_prices = get.hist.quote(instrument = "SPY", start = "2019-11-12", end = "2020-11-13", quote = c("Open" ,"Close"), provider = "yahoo")
+SPY_closing_prices = get.hist.quote(instrument = "SPY", start = "2019-01-01", end = "2020-11-13", quote = c("Open" ,"Close"), provider = "yahoo")
 SPY_closing_prices
 
 SPY_daily_return = get_daily_return(SPY_closing_prices)
@@ -47,7 +47,7 @@ SPY_final_return = SPY_compounded_return - 1
 
 # Create a list of daily returns, moving averages and kellys criterion such that each index represents a stock
 for (i in 1:length(codes)) {
-  closing_prices = get.hist.quote(instrument = codes[i], start = "2016-11-01", end = "2020-11-13", quote = c("Open","Close"), provider = "yahoo")
+  closing_prices = get.hist.quote(instrument = codes[i], start = "2019-01-01", end = "2020-11-13", quote = c("Open","Close"), provider = "yahoo")
   closing_prices
   
   daily_return = get_daily_return(closing_prices)
