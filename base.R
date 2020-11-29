@@ -17,6 +17,7 @@ excel_read <- function(path) {
 get_optimized_garch_variance <- function(p, q, u1) {
   fitted_variance = c()
   u2 = replace(u1, u1 == 0, 0.00000001)
+  
   for (i in 3: length(u2)) {
     res = garch(tail(u2[1:i-1], n = 20), order = c(p,q), control = garch.control(falsetol = 1e-2))
     res$n.likeli

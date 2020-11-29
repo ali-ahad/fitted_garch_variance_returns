@@ -25,10 +25,10 @@ moving_average_list = list()
 kellys_list = list()
 
 # Change the dataframe here for appropriate codes and names
-name = "Consumer Cyclical"
+name = "Transportation"
 codes = transportation[,2]
 codes
-names = financial[,1]
+names = transportation[,1]
 
 
 # Getting the branchmark data (SPY)
